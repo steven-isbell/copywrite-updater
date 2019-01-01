@@ -17,4 +17,5 @@ const noLoginInfoErr = 'Please provide a username or email and password';
   await page.keyboard.type(process.argv[3]);
   await page.click('.btn.btn-primary.btn-block');
   await page.waitForNavigation();
+  await page.goto(process.env.REPOSITORY_PAGE);
 })();
