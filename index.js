@@ -1,9 +1,12 @@
+require('dotenv').config();
 const puppeteer = require('puppeteer');
 const sleep = require('./sleep');
 
 const noLoginInfoErr = 'Please provide a username or email and password';
 
-const { REPOSITORY_PAGE: rp } = process.env(async () => {
+const { REPOSITORY_PAGE: rp } = process.env;
+
+(async () => {
   let count = 1;
   if (!process.argv[2] && !process.argv[3]) {
     throw new Error(noLoginInfoErr);
@@ -21,11 +24,16 @@ const { REPOSITORY_PAGE: rp } = process.env(async () => {
   await page.goto(rp);
   await sleep(page, 60000);
   //   while (!page.$('.blankslate')) {
-  const repos = page.$('.org-repos');
+  await page.evaluate(() => {
+    let dom = document.querySelector('.member-avatar-group');
+    dom.parentNode.removeChild(dom);
+  });
+  const repos = await page.$$('[data-hovercard-type]');
+
   for (let i = 0; i < repos.length; i++) {
     console.log(repos[i]);
   }
-  count += 1;
+  //   count += 1;
   // await page.goto(`${rp}?page={count}`);
   //   }
 })();
