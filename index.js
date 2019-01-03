@@ -34,8 +34,9 @@ const { REPOSITORY_PAGE: rp } = process.env;
     const href = await (await repos[i].getProperty('href')).jsonValue();
     await page.goto(`${href}/blob/master/README.md`);
     await sleep(page, 60000);
-    const FourOhFour = page.$('#parallax_wrapper');
+    const FourOhFour = await page.$('#parallax_wrapper');
     if (!FourOhFour) {
+      const found = (await page.content()).includes('©');
     }
     await page.goBack();
     await sleep(page, 60000);
