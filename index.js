@@ -31,7 +31,14 @@ const { REPOSITORY_PAGE: rp } = process.env;
   const repos = await page.$$('[data-hovercard-type]');
 
   for (let i = 0; i < repos.length; i++) {
-    console.log(repos[i]);
+    const href = await (await repos[i].getProperty('href')).jsonValue();
+    await page.goto(`${href}/blob/master/README.md`);
+    await sleep(page, 60000);
+    const FourOhFour = page.$('#parallax_wrapper');
+    if (!FourOhFour) {
+    }
+    await page.goBack();
+    await sleep(page, 60000);
   }
   //   count += 1;
   // await page.goto(`${rp}?page={count}`);
