@@ -2,15 +2,20 @@ require('dotenv').config();
 const puppeteer = require('puppeteer');
 const sleep = require('./sleep');
 
-const noLoginInfoErr = 'Please provide a username or email and password';
+const noLoginInfoErr = 'Please provide a username or email and password.';
+const noYearError = 'Please provide a new copywrite year.';
 
 const { REPOSITORY_PAGE: rp } = process.env;
 
 (async () => {
-  let count = 1;
   if (!process.argv[2] && !process.argv[3]) {
     throw new Error(noLoginInfoErr);
   }
+  if (!process.argv[4]) {
+    throw new Error(noYearError);
+  }
+  let count = 1;
+  const updatedCopyright = `© DevMountain, LLC. ${process.argv[4]}`;
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto('https://github.com/login');
@@ -36,9 +41,16 @@ const { REPOSITORY_PAGE: rp } = process.env;
     await sleep(page, 60000);
     const FourOhFour = await page.$('#parallax_wrapper');
     if (!FourOhFour) {
-      const found = (await page.content()).includes('©');
+      const content = await page.content();
+      const containsCopyright = content.includes('©');
+      if (containsCopyright) {
+        const isCurrentYear = content.includes(process.argv[4]);
+        if (!isCurrentYear) {
+          await page.click('svg.octicon.octicon-pencil');
+        }
+      }
     }
-    await page.goBack();
+    // await page.goBack();
     await sleep(page, 60000);
   }
   //   count += 1;
