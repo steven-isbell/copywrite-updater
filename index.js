@@ -5,7 +5,7 @@ const sleep = require('./sleep');
 const noLoginInfoErr = 'Please provide a username or email and password.';
 const noYearError = 'Please provide a new copywrite year.';
 
-const { REPOSITORY_PAGE: rp } = process.env;
+const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
 
 (async () => {
   if (!process.argv[2] && !process.argv[3]) {
@@ -15,7 +15,7 @@ const { REPOSITORY_PAGE: rp } = process.env;
     throw new Error(noYearError);
   }
   let count = 1;
-  const updatedCopyright = `© DevMountain, LLC. ${process.argv[4]}`;
+  const updatedCopyright = `© ${gu}, LLC. ${process.argv[4]}`;
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto('https://github.com/login');
@@ -47,10 +47,11 @@ const { REPOSITORY_PAGE: rp } = process.env;
         const isCurrentYear = content.includes(process.argv[4]);
         if (!isCurrentYear) {
           await page.click('svg.octicon.octicon-pencil');
+          const editableContent = await page.content();
+          const copyrightIndex = editableContent.indexOf('©');
         }
       }
     }
-    // await page.goBack();
     await sleep(page, 60000);
   }
   //   count += 1;
