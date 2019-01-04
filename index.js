@@ -48,23 +48,17 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
         if (!isCurrentYear) {
           await page.click('svg.octicon.octicon-pencil');
           await page.waitForNavigation();
-          await page.evaluate(() => {
-            let dom = document.getElementsByClassName('.CodeMirror-linenumber');
-            for (let i = 0; i < dom.length; i++) {
-              dom[i].parentNode.removeChild(dom[i]);
-            }
-          });
           const codeContainer = await page.$('.CodeMirror-code');
           const codeBlock = await (await codeContainer.getProperty(
             'innerText'
           )).jsonValue();
           const updated = codeBlock.replace(/\d{4}/, process.argv[4]);
-          await page.evaluate(updated => {
+          const removeLineNumbers = updated.replace(/\d{1,3}\n/g, '');
+          console.log(removeLineNumbers);
+          await page.evaluate(removeLineNumbers => {
             const rawBlock = document.querySelector('.CodeMirror-code');
-            rawBlock.innerText = updated;
-          }, updated);
-          // const editableContent = await page.content();
-          // const copyrightIndex = editableContent.indexOf('©');
+            rawBlock.innerText = removeLineNumbers;
+          }, removeLineNumbers);
         }
       }
     }
