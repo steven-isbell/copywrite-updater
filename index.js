@@ -16,7 +16,6 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
     throw new Error(noYearError);
   }
   let count = 1;
-  const updatedCopyright = `© ${gu}, LLC. ${process.argv[4]}`;
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
   await page.goto('https://github.com/login');
@@ -49,11 +48,21 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
         if (!isCurrentYear) {
           await page.click('svg.octicon.octicon-pencil');
           await page.waitForNavigation();
+          await page.evaluate(() => {
+            let dom = document.getElementsByClassName('.CodeMirror-linenumber');
+            for (let i = 0; i < dom.length; i++) {
+              dom[i].parentNode.removeChild(dom[i]);
+            }
+          });
           const codeContainer = await page.$('.CodeMirror-code');
           const codeBlock = await (await codeContainer.getProperty(
             'innerText'
           )).jsonValue();
           const updated = codeBlock.replace(/\d{4}/, process.argv[4]);
+          await page.evaluate(updated => {
+            const rawBlock = document.querySelector('.CodeMirror-code');
+            rawBlock.innerText = updated;
+          }, updated);
           // const editableContent = await page.content();
           // const copyrightIndex = editableContent.indexOf('©');
         }
