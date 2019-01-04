@@ -47,20 +47,19 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
       if (containsCopyright) {
         const isCurrentYear = content.includes(process.argv[4]);
         if (!isCurrentYear) {
-          await page.evaluate(() => {
-            const codeContainer = await document.querySelector(
-              '.CodeMirror-code'
-            );
-            const codeBlock = codeContainer.innerText;
-            const updated = codeBlock.replace;
-          });
-          // await page.click('svg.octicon.octicon-pencil');
+          await page.click('svg.octicon.octicon-pencil');
+          await page.waitForNavigation();
+          const codeContainer = await page.$('.CodeMirror-code');
+          const codeBlock = await (await codeContainer.getProperty(
+            'innerText'
+          )).jsonValue();
+          const updated = codeBlock.replace(/\d{4}/, process.argv[4]);
           // const editableContent = await page.content();
           // const copyrightIndex = editableContent.indexOf('©');
         }
       }
     }
-    await sleep(page, 60000);
+    // await sleep(page, 60000);
   }
   //   count += 1;
   // await page.goto(`${rp}?page={count}`);
