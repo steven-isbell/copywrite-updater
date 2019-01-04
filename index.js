@@ -1,5 +1,6 @@
 require('dotenv').config();
 const puppeteer = require('puppeteer');
+
 const sleep = require('./sleep');
 
 const noLoginInfoErr = 'Please provide a username or email and password.';
@@ -46,9 +47,16 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
       if (containsCopyright) {
         const isCurrentYear = content.includes(process.argv[4]);
         if (!isCurrentYear) {
-          await page.click('svg.octicon.octicon-pencil');
-          const editableContent = await page.content();
-          const copyrightIndex = editableContent.indexOf('©');
+          await page.evaluate(() => {
+            const codeContainer = await document.querySelector(
+              '.CodeMirror-code'
+            );
+            const codeBlock = codeContainer.innerText;
+            const updated = codeBlock.replace;
+          });
+          // await page.click('svg.octicon.octicon-pencil');
+          // const editableContent = await page.content();
+          // const copyrightIndex = editableContent.indexOf('©');
         }
       }
     }
