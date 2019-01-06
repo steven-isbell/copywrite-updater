@@ -3,14 +3,14 @@ const puppeteer = require('puppeteer');
 
 const sleep = require('./sleep');
 
-const noLoginInfoErr =
+const providedOptionsError =
   'Please provide a username or email, password, and new copywrite year.';
 
 const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
 
 (async () => {
   if (!process.argv[2] || !process.argv[3] || !process.argv[4]) {
-    throw new Error(noLoginInfoErr);
+    throw new Error(providedOptionsError);
   }
 
   let count = 1;
