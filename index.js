@@ -3,23 +3,24 @@ const puppeteer = require('puppeteer');
 
 const sleep = require('./sleep');
 
-const noLoginInfoErr = 'Please provide a username or email and password.';
-const noYearError = 'Please provide a new copywrite year.';
+const noLoginInfoErr =
+  'Please provide a username or email, password, and new copywrite year.';
 
 const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
 
 (async () => {
-  if (!process.argv[2] && !process.argv[3]) {
+  if (!process.argv[2] || !process.argv[3] || !process.argv[4]) {
     throw new Error(noLoginInfoErr);
   }
-  if (!process.argv[4]) {
-    throw new Error(noYearError);
-  }
+
   let count = 1;
+
   const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
+
   await page.goto('https://github.com/login');
   await sleep(page, 60000);
+
   await page.click('#login_field');
   await page.keyboard.type(process.argv[2]);
   await page.click('#password');
@@ -28,11 +29,13 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
   await page.waitForNavigation();
   await page.goto(rp);
   await sleep(page, 60000);
+
   while (!page.$('.blankslate')) {
     await page.evaluate(() => {
       let dom = document.querySelector('.member-avatar-group');
       dom.parentNode.removeChild(dom);
     });
+
     const repos = await page.$$('[data-hovercard-type]');
 
     for (let i = 0; i < repos.length; i++) {
