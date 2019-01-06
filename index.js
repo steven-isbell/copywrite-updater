@@ -42,6 +42,7 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
       const href = await (await repos[i].getProperty('href')).jsonValue();
       await page.goto(`${href}/blob/master/README.md`);
       await sleep(page, 60000);
+
       const FourOhFour = await page.$('#parallax_wrapper');
       if (!FourOhFour) {
         const content = await page.content();
@@ -57,7 +58,6 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
             )).jsonValue();
             const updated = codeBlock.replace(/\d{4}/, process.argv[4]);
             const removeLineNumbers = updated.replace(/\d{1,3}\n/g, '');
-            console.log(removeLineNumbers);
             await page.evaluate(removeLineNumbers => {
               const rawBlock = document.querySelector('.CodeMirror-code');
               rawBlock.innerText = removeLineNumbers;
