@@ -56,8 +56,14 @@ const { REPOSITORY_PAGE: rp, GITHUB_USER: gu } = process.env;
             const codeBlock = await (await codeContainer.getProperty(
               'innerText'
             )).jsonValue();
-            const updated = codeBlock.replace(/\d{4}/, process.argv[4]);
-            const removeLineNumbers = updated.replace(/\d{1,3}\n/g, '');
+            const updatedCopyrightBlock = codeBlock.replace(
+              /\d{4}/,
+              process.argv[4]
+            );
+            const removeLineNumbers = updatedCopyrightBlock.replace(
+              /\d{1,3}\n/g,
+              ''
+            );
             await page.evaluate(removeLineNumbers => {
               const rawBlock = document.querySelector('.CodeMirror-code');
               rawBlock.innerText = removeLineNumbers;
